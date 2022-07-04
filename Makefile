@@ -16,3 +16,11 @@ test-cov: venv
 	if which sensible-browser >/dev/null; then \
 	    sensible-browser htmlcov/index.html; \
 	fi
+
+black: venv
+	venv/bin/black $(SRC_DIR) $(TESTS_DIR)
+
+black-check: venv
+	venv/bin/black --check $(SRC_DIR) $(TESTS_DIR)
+
+pr: test black-check

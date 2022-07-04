@@ -1,11 +1,11 @@
+import glob
 import json
 import os
-import pytest
-import glob
-import networkx
 
 import cli
 import graphs
+import networkx
+import pytest
 
 
 def test_load_invalid_file(pytestconfig):
@@ -13,13 +13,15 @@ def test_load_invalid_file(pytestconfig):
         file_path = os.path.join(pytestconfig.rootpath, "tests", "empty.txt")
         obj = cli.getObject(file_path)
 
+
 def rotate(l, n):
     # shift list by given length
     return l[n:] + l[:n]
 
+
 def are_cycles_equal(cycles, ref_cycles):
     # Cycles returned by Tarjan's algorithm and networkx.simple_cycles might be in different order.
-    # Therfore dedicated comparison method required.
+    # Therefore dedicated comparison method required.
     print(f"Comparing cycles:\n{cycles=}\n{ref_cycles=}")
     if len(cycles) != len(ref_cycles):
         return False
@@ -44,33 +46,44 @@ def are_cycles_equal(cycles, ref_cycles):
                 else:
                     continue
 
-    print(f"Found equal cycles: {equal_cycles_cnt}, required equal cycles: {len(cycles)}")
+    print(
+        f"Found equal cycles: {equal_cycles_cnt}, required equal cycles: {len(cycles)}"
+    )
     if equal_cycles_cnt != len(cycles):
         return False
 
     return True
 
+
 def pytest_generate_tests(metafunc):
     if "graph_file" in metafunc.fixturenames:
-        this_dir    = os.path.dirname(os.path.abspath(metafunc.module.__file__))
+        this_dir = os.path.dirname(os.path.abspath(metafunc.module.__file__))
         file_list = sorted(glob.glob(os.path.join(this_dir, "graph*.txt")))
         metafunc.parametrize("graph_file", file_list)
 
+
 def test_simple_cycles(graph_file):
-        obj = cli.getObject(graph_file)
-        assert isinstance(obj, dict), "Object loaded from graph.txt is not dictionary"
+    """
+    Function performs following:
+    - read a graph from given graph file
+    - gets the list of the simple cycles
+    - compare calculated list of cycles with the cycles returned by networkx.DiGraph
 
-        print(f"{graph_file=}")
-        graph = networkx.DiGraph(obj)
-        ref_cycles = sorted(list(networkx.simple_cycles(graph)))
-        print(f"{ref_cycles=}")
+    :param graph_file: a parametrized fixture with the list of graph test files
+    :return:
+    """
+    obj = cli.getObject(graph_file)
+    assert isinstance(obj, dict), "Object loaded from graph.txt is not dictionary"
 
-        cycles = graphs.simpleCyclesTarjan(obj)
-        #cycles = graphs.simpleCyclesTiernan(obj)
-        print(f"{cycles=}")
+    print(f"{graph_file=}")
+    graph = networkx.DiGraph(obj)
+    ref_cycles = sorted(list(networkx.simple_cycles(graph)))
+    print(f"{ref_cycles=}")
 
-        cycles_equal = are_cycles_equal(cycles, ref_cycles)
-        print(f"{cycles_equal=}")
+    cycles = graphs.simpleCyclesTarjan(obj)
+    print(f"{cycles=}")
 
-        assert cycles_equal == True, "Invalid cycles found"
+    cycles_equal = are_cycles_equal(cycles, ref_cycles)
+    print(f"{cycles_equal=}")
 
+    assert cycles_equal, "Invalid cycles found"

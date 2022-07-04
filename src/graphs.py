@@ -1,10 +1,17 @@
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+
 
 def simpleCyclesTarjan(graph):
-    # Algorithm description: https://ecommons.cornell.edu/handle/1813/5941
+    """
+    Function returns a list of all simple cycles in a given directed graph.
+    Algorithm description: https://ecommons.cornell.edu/handle/1813/5941
+
+    :param graph: dict of keys (vertexes) and values (vertexes' neighbours)
+    :return: list of simple cycles found in graph
+    """
 
     def backtrack(start_v, curr_v):
         found = False
@@ -28,7 +35,7 @@ def simpleCyclesTarjan(graph):
                 # Copy it.
                 simple_cycles.append(point_stack[:])
                 found = True
-            elif mark.get(neighbour, False) == False:
+            elif not mark.get(neighbour, False):
                 found = backtrack(start_v, neighbour) or found
 
         logger.debug(f"{start_v=} {curr_v=} {neighbours=} {point_stack=}")
@@ -42,7 +49,6 @@ def simpleCyclesTarjan(graph):
                     break
         point_stack.pop()
         return found
-
 
     logger.debug(f"Input graph: {graph}")
     # Sort graph by vertexes, algorithms assumes iterating vertexes in ascending order
@@ -67,4 +73,3 @@ def simpleCyclesTarjan(graph):
             mark[u] = False
 
     return simple_cycles
-
