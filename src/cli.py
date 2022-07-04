@@ -15,7 +15,7 @@ def getObject(fname):
     return obj
 
 def main():
-    logging.basicConfig(stream=sys.stderr)
+    logging.basicConfig(stream=sys.stderr, format="%(levelname)s:%(name)s [%(funcName)s():%(lineno)s] - %(message)s")
 
     fname = sys.argv[1] if len(sys.argv) > 1 else None
 
