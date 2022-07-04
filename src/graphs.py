@@ -13,7 +13,7 @@ def simpleCyclesTarjan(graph):
         mark[curr_v] = True
         marked_stack.append(curr_v)
 
-        logger.debug(f"{start_v=} {curr_v=} {mark=} {marked_stack=} {point_stack=}")
+        logger.debug(f"{start_v=} {curr_v=} {marked_stack=} {point_stack=}")
 
         # If vertex not present in graph then it has no neighbours, return empty list
         neighbours = graph.get(curr_v, [])
@@ -21,16 +21,17 @@ def simpleCyclesTarjan(graph):
         for neighbour in neighbours:
             logger.debug(f"{start_v=} {curr_v=} {neighbour=}")
             if neighbour < start_v:
-                neighbours.remove(neighbour)
-                logger.debug(f"after delete {neighbours=}")
+                graph[neighbour] = []
             elif neighbour == start_v:
-                logger.debug(f"Cycle found: {point_stack=}")
+                logger.debug(f">>>> Cycle found: {point_stack=}")
                 # Do not append reference to point_stack - it is constantly manipulated in this method
                 # Copy it.
                 simple_cycles.append(point_stack[:])
                 found = True
             elif mark.get(neighbour, False) == False:
                 found = backtrack(start_v, neighbour) or found
+
+        logger.debug(f"{start_v=} {curr_v=} {neighbours=} {point_stack=}")
 
         if found is True:
             while True:
@@ -44,6 +45,9 @@ def simpleCyclesTarjan(graph):
 
 
     logger.debug(f"Input graph: {graph}")
+    # Sort graph by vertexes, algorithms assumes iterating vertexes in ascending order
+    graph = dict(sorted(graph.items()))
+    logger.debug(f"Sorted graph: {graph}")
 
     # Initialization
     mark = {v: False for v in graph}
@@ -51,7 +55,11 @@ def simpleCyclesTarjan(graph):
     marked_stack = []
 
     simple_cycles = []
-    for v in graph:
+    # We iterate over a list of keys (vertexes) instead of directly over keys (vertexes) in dict
+    # in order to avoid error:
+    #   RuntimeError: dictionary changed size during iteration
+    # when setting the empty list for key (vertex) in backtrack method
+    for v in list(graph):
         logger.debug(f"Checking vertex: {v}")
         backtrack(v, v)
         while len(marked_stack) > 0:
