@@ -1,0 +1,1 @@
+{"foo": ["bar", "baz"], "orange": ["banana", "monkey"], "bar": ["qux", "quux"], "monkey": ["cow", "orange"], "banana": ["mango", "monkey"], "baz": ["baz"], "quux": ["bar", "banana"], "cow": ["orange"]}
