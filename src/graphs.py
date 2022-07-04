@@ -1,7 +1,7 @@
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 def simpleCyclesTarjan(in_graph):
     # Algorithm description: https://ecommons.cornell.edu/handle/1813/5941
