@@ -18,7 +18,11 @@ def main():
     logging.basicConfig(stream=sys.stderr)
 
     fname = sys.argv[1] if len(sys.argv) > 1 else None
-    cycles = graphs.simple_cycles(getObject(fname))
+
+    cycles = graphs.simpleCyclesTarjan(getObject(fname))
+    print("Cycles found:")
+    for c in cycles:
+        print(f"{c}")
 
 if __name__ == '__main__':
     main()
